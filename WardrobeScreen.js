@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Image, FlatList, StyleSheet, Text, Button } from 'react-native';
-import { usePhotos } from './PhotoContext';
+import { getClothesList, deleteItem } from './Database';
+
 
 export default function WardrobeScreen({ navigation }) {
-  const { photos } = usePhotos();
+
+  const [clothes, setClothes] = useState([]);
+
+  const loadClothes = async () => {
+    const list = await getClothesList();
+    setClothes(list);
+  };
+
+  const handleDelete = async (id) => {
+    await deleteItem(id);
+    return getClothesList;
+  };
 
   return(
   <View style={styles.container}>

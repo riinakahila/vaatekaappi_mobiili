@@ -1,13 +1,19 @@
-import { StyleSheet, View, Button, Text, Image, FlatList } from 'react-native';
+import { StyleSheet, View, Button, Text, TextInput, Image, FlatList } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useRef } from 'react';
-import { usePhotos } from './PhotoContext';
+import { useRef, useState, useEffect } from 'react';
+import { initialize, saveClothes } from './Database';
 
-export default function CameraScreen() {
+export default function CameraScreen({navigation}) {
 
-  const { addPhoto } = usePhotos();
   const cameraRef = useRef(null);
   const [permission, requestPermission] = useCameraPermissions();
+  const [photoUri, setPhotoUri] = useState(null);
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('');
+
+  useEffect(() => {
+    initialize();
+  }, []);
 
   if (!permission) return <View />;
 
@@ -23,7 +29,13 @@ export default function CameraScreen() {
   const snap = async () => {
     if (!cameraRef.current) return;
     const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.8 });
-    addPhoto(photo.uri);
+
+    await saveClothes({
+      title: 'untitled',
+      category: 'unknown',
+      uri: photo.uri
+    })
+   
     navigation.navigate('Wardrobe');
   };
 
