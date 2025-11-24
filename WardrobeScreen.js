@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Image, FlatList, StyleSheet, Text, Button } from 'react-native';
 import { getClothesList, deleteItem } from './Database';
 
@@ -12,26 +12,35 @@ export default function WardrobeScreen({ navigation }) {
     setClothes(list);
   };
 
+  useEffect(() => {
+    loadClothes();
+  }, []);
+
   const handleDelete = async (id) => {
     await deleteItem(id);
-    return getClothesList;
+    loadClothes();
   };
 
   return(
   <View style={styles.container}>
     <Button title="Camera" onPress={() => navigation.navigate('Camera')} />
-      {photos.length === 0 ? (
+      {clothes.length === 0 ? (
         <View style={styles.emptyWrap}>
-          <Text style={styles.empty}>Ei vielä yhtään kuvaa</Text>
+          <Text style={styles.empty}>Ei vielä yhtään vaatetta</Text>
         </View>
       ) : (
         <FlatList
-          data={photos}
-          keyExtractor={(uri, index) => uri + index}
+          data={clothes}
+          keyExtractor={(item) => item.id.toString()}
           numColumns={3}
           contentContainerStyle={styles.grid}
           renderItem={({ item }) => (
-            <Image source={{ uri: item }} style={styles.image} />
+          <View>
+            <Image source={{ uri: item.uri }} style={styles.image} />
+            <Text>{item.title}</Text>
+            <Text>{item.category}</Text>
+            <Button title="Poista" onPress={() => handleDelete(item.id)} />
+          </View>
           )}
         />
       )}
@@ -60,4 +69,5 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     margin: 5,
   },
+  
 });

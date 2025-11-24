@@ -20,19 +20,20 @@ export const initialize = async () => {
     }
   }
 
-  export const updateClothesList = async () => {
+  export const getClothesList = async () => {
     try {
       const list = await db.getAllAsync('SELECT * from clothes');
       return list;
     } catch (error) {
       console.error('could not get clothes list', error);
+      return [];
     }
   }
 
   export const deleteItem = async (id) => {
     try {
       await db.runAsync('DELETE FROM clothes WHERE id=?', id);
-      await updateList();
+      await loadClothes();
     }
     catch (error) {
       console.error('Could not delete item', error);

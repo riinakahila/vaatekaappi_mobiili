@@ -2,6 +2,7 @@ import { StyleSheet, View, Button, Text, TextInput, Image, FlatList } from 'reac
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRef, useState, useEffect } from 'react';
 import { initialize, saveClothes } from './Database';
+import {Picker} from '@react-native-picker/picker';
 
 export default function CameraScreen({navigation}) {
 
@@ -10,6 +11,16 @@ export default function CameraScreen({navigation}) {
   const [photoUri, setPhotoUri] = useState(null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
+
+  const pickerRef = useRef();
+
+  function open() {
+  pickerRef.current.focus();
+}
+
+  function close() {
+  pickerRef.current.blur();
+}
 
   useEffect(() => {
     initialize();
@@ -29,22 +40,50 @@ export default function CameraScreen({navigation}) {
   const snap = async () => {
     if (!cameraRef.current) return;
     const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.8 });
+    setPhotoUri(photo.uri);
+  }
+
+  const handleSave = async () => {
+    if (!photoUri) return;
 
     await saveClothes({
-      title: 'untitled',
-      category: 'unknown',
-      uri: photo.uri
+      title: title,
+      category: category,
+      uri: photoUri
     })
+    setTitle('');
+    setCategory('');
+    setPhotoUri(null);
    
     navigation.navigate('Wardrobe');
   };
 
+  if (!photoUri) {
   return (
     <View style={styles.container}>
       <CameraView ref={cameraRef} style={styles.camera} facing="back" />
       <Button title="Ota kuva" onPress={snap} />
     </View>
   );
+}
+
+
+ return (
+  <View style={styles.container}>
+    <Image source={{uri: photoUri}}/>
+    <Text>Vaatteen nimi:</Text>
+    <TextInput value={title} onChangeText={setTitle} placeholder='Vaatteen nimi'/>
+    <Text>Kategoria:</Text>
+    <Picker ref={pickerRef} selectedValue={category} onValueChange={(value) => setCategory(value)}>
+      <Picker.Item label='T-paita' value='t-paita'/>
+      <Picker.Item label='Pitkähihainen paita' value='pitkähihainen'/>
+      <Picker.Item label='Housut' value='housut'/>
+      <Picker.Item label='Takki' value='takki'/>
+    </Picker>
+    <Button onPress={handleSave} title='Tallenna'/>
+
+  </View>
+ )
 }
 
 const styles = StyleSheet.create({
