@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Image, FlatList, StyleSheet, Text, Button } from 'react-native';
+import { View, Image, FlatList, StyleSheet } from 'react-native';
+import { Card, Text, Button } from 'react-native-paper';
 import { getClothesList, deleteItem } from './Database';
 
 
@@ -23,7 +24,6 @@ export default function WardrobeScreen({ navigation }) {
 
   return(
   <View style={styles.container}>
-    <Button title="Camera" onPress={() => navigation.navigate('Camera')} />
       {clothes.length === 0 ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.empty}>Ei vielä yhtään vaatetta</Text>
@@ -39,11 +39,14 @@ export default function WardrobeScreen({ navigation }) {
             <Image source={{ uri: item.uri }} style={styles.image} />
             <Text>{item.title}</Text>
             <Text>{item.category}</Text>
-            <Button title="Poista" onPress={() => handleDelete(item.id)} />
+            <Button mode="contained" icon="delete"onPress={() => handleDelete(item.id)}>Poista</Button>
           </View>
           )}
         />
-      )}
+      )} 
+      <View style={{ position: 'absolute', bottom: 50, width: '100%', alignItems: 'center' }}>
+      <Button mode="contained" icon="camera"onPress={() => navigation.navigate('Camera')}>Kamera</Button>
+      </View>
     </View>
   );
 }

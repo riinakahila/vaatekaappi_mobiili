@@ -33,7 +33,6 @@ export const initialize = async () => {
   export const deleteItem = async (id) => {
     try {
       await db.runAsync('DELETE FROM clothes WHERE id=?', id);
-      await loadClothes();
     }
     catch (error) {
       console.error('Could not delete item', error);

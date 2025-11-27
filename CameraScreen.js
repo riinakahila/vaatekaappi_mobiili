@@ -1,4 +1,5 @@
-import { StyleSheet, View, Button, Text, TextInput, Image, FlatList } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
+import { Card, Text, Button, TextInput } from 'react-native-paper';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useRef, useState, useEffect } from 'react';
 import { initialize, saveClothes } from './Database';
@@ -32,7 +33,7 @@ export default function CameraScreen({navigation}) {
     return (
       <View style={styles.center}>
         <Text>Kameran käyttölupa, jotta voit lisätä omia kuvia:</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button mode='contained' icon="account-alert" onPress={requestPermission}>Anna kameran käyttöoikeus</Button>
       </View>
     );
   }
@@ -62,7 +63,7 @@ export default function CameraScreen({navigation}) {
   return (
     <View style={styles.container}>
       <CameraView ref={cameraRef} style={styles.camera} facing="back" />
-      <Button title="Ota kuva" onPress={snap} />
+      <Button mode='contained' onPress={snap}>Ota kuva</Button>
     </View>
   );
 }
@@ -70,18 +71,27 @@ export default function CameraScreen({navigation}) {
 
  return (
   <View style={styles.container}>
-    <Image source={{uri: photoUri}}/>
-    <Text>Vaatteen nimi:</Text>
-    <TextInput value={title} onChangeText={setTitle} placeholder='Vaatteen nimi'/>
-    <Text>Kategoria:</Text>
-    <Picker ref={pickerRef} selectedValue={category} onValueChange={(value) => setCategory(value)}>
+    <Card style={styles.card}>
+    <Card.Cover source={{uri: photoUri}} style={styles.image}/>
+    <Card.Content>
+    <Text variant='titleMedium'>Uusi vaate</Text>
+    <Text variant='bodyMedium'>Vaatteen nimi:</Text>
+      <TextInput mode='outlined' value={title} onChangeText={setTitle} placeholder='Vaatteen nimi'/>
+    <Text variant='bodyMedium'>Valitse kategoria:</Text>
+    <View style={styles.pickerWrap}>
+    <Picker selectedValue={category} onValueChange={(value) => setCategory(value)}>
       <Picker.Item label='T-paita' value='t-paita'/>
       <Picker.Item label='Pitkähihainen paita' value='pitkähihainen'/>
       <Picker.Item label='Housut' value='housut'/>
       <Picker.Item label='Takki' value='takki'/>
     </Picker>
-    <Button onPress={handleSave} title='Tallenna'/>
+    </View>
+  </Card.Content>
 
+  <Card.Actions>
+    <Button mode='contained' icon='content-save' onPress={handleSave}>Tallenna vaate</Button>
+  </Card.Actions>
+    </Card>
   </View>
  )
 }
@@ -92,6 +102,21 @@ const styles = StyleSheet.create({
     padding: 12, 
     justifyContent: 'center', 
     backgroundColor: '#fff' 
+  },
+  card: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#e6e6fa'
+  },
+  image: {
+    height:200,
+  },
+  pickerWrap: {
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: '#ccc',
+    overflow: 'hidden',
+    marginBottom: 8,
   },
   center: { 
     flex: 1, 
